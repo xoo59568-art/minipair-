@@ -1,113 +1,722 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Rabbit Pair Checker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rabbit XMD Mini — Pair Device</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#03030a;
+  --s1:#080812;
+  --s2:#0e0e1c;
+  --s3:#141428;
+  --g:#00ff87;
+  --g2:#00cc6a;
+  --gd:rgba(0,255,135,0.15);
+  --gd2:rgba(0,255,135,0.06);
+  --gd3:rgba(0,255,135,0.03);
+  --pu:#a855f7;
+  --bl:#3b82f6;
+  --t:#eef2ff;
+  --t2:rgba(238,242,255,0.5);
+  --t3:rgba(238,242,255,0.22);
+  --t4:rgba(238,242,255,0.1);
+  --er:#f43f5e;
+  --bdr:rgba(255,255,255,0.05);
+  --bdr2:rgba(255,255,255,0.09);
+  --font:'Inter',sans-serif;
+  --display:'Syne',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+html,body{height:100%}
+body{
+  font-family:var(--font);
+  background:var(--bg);
+  color:var(--t);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
 
-  <style>
-    body {
-      margin: 0;
-      background: #111;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+/* ── CANVAS PARTICLES ── */
+#c{position:fixed;inset:0;z-index:0;opacity:.5}
 
-    .box {
-      width: 90%;
-      max-width: 500px;
-      background: #1c1c1c;
-      padding: 20px;
-      border-radius: 15px;
-    }
+/* ── NOISE TEXTURE ── */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:200px;
+}
 
-    input, button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      margin-top: 10px;
-      box-sizing: border-box;
-    }
+/* ── PAGE ── */
+.page{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;
+  padding:0 20px 60px;
+}
 
-    button {
-      cursor: pointer;
-    }
+/* ── HEADER ── */
+header{
+  width:100%;max-width:1000px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 0;
+}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.brand-logo{
+  width:38px;height:38px;border-radius:11px;
+  background:linear-gradient(135deg,var(--gd),var(--gd3));
+  border:1px solid rgba(0,255,135,0.2);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.brand-logo::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,255,135,0.12) 0%,transparent 60%);
+}
+.brand-name{
+  font-family:var(--display);font-size:16px;font-weight:700;
+  letter-spacing:-0.3px;color:var(--t);
+}
+.pill{
+  font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;
+  padding:4px 10px;border-radius:20px;
+  background:var(--gd2);border:1px solid rgba(0,255,135,0.18);
+  color:var(--g);
+  display:flex;align-items:center;gap:5px;
+}
+.pill-dot{
+  width:5px;height:5px;border-radius:50%;background:var(--g);
+  animation:pulse-dot 2.4s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 
-    pre {
-      background: #222;
-      padding: 15px;
-      border-radius: 10px;
-      overflow-x: auto;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-  </style>
+/* ── HERO ── */
+.hero{
+  text-align:center;
+  padding:60px 0 48px;
+  max-width:600px;
+  width:100%;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--g);margin-bottom:20px;
+  opacity:.85;
+}
+.hero-line{width:28px;height:1px;background:var(--g);opacity:.5}
+.hero-h1{
+  font-family:var(--display);
+  font-size:clamp(40px,7vw,72px);
+  font-weight:800;
+  letter-spacing:-2px;
+  line-height:1.05;
+  margin-bottom:18px;
+  color:var(--t);
+}
+.hero-h1 .accent{
+  display:inline-block;
+  background:linear-gradient(90deg,#00ff87,#22d3ee,#a855f7);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{0%{background-position:0% center}100%{background-position:200% center}}
+.hero-sub{
+  font-size:15px;color:var(--t2);line-height:1.8;
+  max-width:420px;margin:0 auto;
+}
+
+/* ── CARD ── */
+.card{
+  width:100%;max-width:480px;
+  background:var(--s1);
+  border:1px solid var(--bdr2);
+  border-radius:28px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 1px rgba(0,255,135,0.04);
+}
+/* top shimmer */
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(0,255,135,.5) 40%,rgba(168,85,247,.5) 60%,transparent 100%);
+}
+/* inner glow */
+.card::after{
+  content:'';position:absolute;
+  top:-80px;left:50%;transform:translateX(-50%);
+  width:300px;height:160px;
+  background:radial-gradient(ellipse,rgba(0,255,135,.06),transparent 70%);
+  pointer-events:none;
+}
+
+.card-body{padding:40px 36px}
+
+@media(max-width:480px){.card-body{padding:30px 22px}.hero-h1{letter-spacing:-1.5px}}
+
+/* ── STATE INDICATOR ── */
+.state-bar{
+  display:flex;align-items:center;justify-content:center;gap:0;
+  margin-bottom:32px;
+}
+.state-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  flex:1;position:relative;
+}
+.state-item:not(:last-child)::after{
+  content:'';position:absolute;
+  top:14px;left:calc(50% + 18px);
+  width:calc(100% - 36px);height:1px;
+  background:var(--bdr2);transition:background .4s;
+}
+.state-item.done:not(:last-child)::after{background:rgba(0,255,135,.3)}
+.state-node{
+  width:28px;height:28px;border-radius:50%;
+  border:1.5px solid var(--bdr2);
+  background:var(--s2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:var(--t3);
+  transition:all .35s cubic-bezier(.34,1.56,.64,1);
+  position:relative;z-index:1;
+}
+.state-item.active .state-node{
+  border-color:var(--g);background:var(--gd);color:var(--g);
+  box-shadow:0 0 0 5px rgba(0,255,135,.08);
+}
+.state-item.done .state-node{
+  border-color:var(--g);background:var(--g);color:#000;
+}
+.state-txt{font-size:10px;color:var(--t3);font-weight:500;white-space:nowrap}
+.state-item.active .state-txt,.state-item.done .state-txt{color:var(--t2)}
+
+/* ── FORM ── */
+.form-title{font-family:var(--display);font-size:21px;font-weight:700;letter-spacing:-.5px;margin-bottom:5px}
+.form-sub{font-size:13px;color:var(--t3);margin-bottom:28px;line-height:1.6}
+
+.label{
+  font-size:11px;font-weight:600;letter-spacing:.6px;
+  text-transform:uppercase;color:var(--t3);
+  display:block;margin-bottom:8px;
+}
+
+.inp-wrap{
+  position:relative;
+  background:var(--s2);
+  border:1.5px solid var(--bdr);
+  border-radius:14px;
+  display:flex;align-items:center;
+  overflow:hidden;
+  transition:border-color .2s,box-shadow .2s;
+}
+.inp-wrap:focus-within{
+  border-color:rgba(0,255,135,.35);
+  box-shadow:0 0 0 4px rgba(0,255,135,.06),inset 0 1px 0 rgba(0,255,135,.04);
+}
+.inp-wrap.shake{animation:shake .4s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+
+.inp-icon{
+  width:50px;display:flex;align-items:center;justify-content:center;
+  border-right:1px solid var(--bdr);flex-shrink:0;
+  color:var(--t3);height:54px;
+  background:rgba(255,255,255,0.01);
+}
+input[type=tel]{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--t);font-family:var(--mono);font-size:15px;
+  padding:0 16px;height:54px;letter-spacing:.8px;
+  -webkit-appearance:none;
+}
+input[type=tel]::placeholder{font-family:var(--font);font-size:13px;color:var(--t4);letter-spacing:0}
+.inp-clear{
+  width:42px;height:54px;display:flex;align-items:center;justify-content:center;
+  color:var(--t3);cursor:pointer;flex-shrink:0;
+  opacity:0;transition:opacity .2s;background:none;border:none;
+}
+input:not(:placeholder-shown) ~ .inp-clear{opacity:1}
+.inp-clear:hover{color:var(--t2)}
+
+.hint-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:8px;padding:0 2px;
+}
+.hint{font-size:11.5px;color:var(--t3);line-height:1.5}
+.hint b{color:rgba(238,242,255,.45);font-weight:500}
+.char-count{font-family:var(--mono);font-size:10px;color:var(--t3)}
+
+/* ── CTA ── */
+.cta{
+  width:100%;height:56px;
+  margin-top:22px;
+  background:linear-gradient(135deg,#00ff87 0%,#00cc6a 100%);
+  color:#000;border:none;border-radius:14px;
+  font-family:var(--display);font-size:15px;font-weight:700;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  position:relative;overflow:hidden;
+  transition:transform .15s,box-shadow .2s,opacity .15s;
+  letter-spacing:-.2px;
+}
+.cta::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.18) 0%,transparent 55%);
+}
+.cta:hover:not(:disabled){
+  transform:translateY(-2px);
+  box-shadow:0 16px 48px rgba(0,255,135,.28),0 4px 16px rgba(0,255,135,.15);
+}
+.cta:active:not(:disabled){transform:translateY(0)}
+.cta:disabled{opacity:.35;cursor:not-allowed}
+.cta .ripple{
+  position:absolute;border-radius:50%;background:rgba(0,0,0,.15);
+  transform:scale(0);animation:ripple .6s linear;pointer-events:none;
+}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+
+.spinner{
+  width:18px;height:18px;
+  border:2.5px solid rgba(0,0,0,.2);border-top-color:#000;
+  border-radius:50%;animation:spin .55s linear infinite;flex-shrink:0;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── ERROR ── */
+#err{display:none;margin-top:14px;animation:fade-up .3s ease}
+.err-inner{
+  background:rgba(244,63,94,.07);
+  border:1px solid rgba(244,63,94,.2);
+  border-radius:12px;padding:12px 14px;
+  display:flex;align-items:flex-start;gap:9px;
+}
+.err-ico{font-size:14px;flex-shrink:0;margin-top:1px}
+.err-txt{font-size:12.5px;color:var(--er);line-height:1.55}
+
+/* ── RESULT ── */
+#res{display:none}
+
+.res-badge{
+  display:flex;align-items:center;gap:8px;margin-bottom:22px;
+}
+.res-badge-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--g);
+  box-shadow:0 0 10px var(--g);animation:pulse-dot 2s ease-in-out infinite;
+}
+.res-badge-txt{font-size:13px;font-weight:600;color:var(--t2)}
+
+/* Code box */
+.code-box{
+  position:relative;border-radius:20px;overflow:hidden;
+  margin-bottom:18px;
+  animation:fade-up .5s cubic-bezier(.22,1,.36,1);
+}
+.code-box-bg{
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,255,135,.08) 0%,rgba(0,255,135,.02) 50%,rgba(168,85,247,.04) 100%);
+}
+.code-box-border{
+  position:absolute;inset:0;border-radius:20px;
+  border:1px solid rgba(0,255,135,.2);pointer-events:none;
+}
+/* spinning border */
+.code-box-ring{
+  position:absolute;inset:-1px;border-radius:21px;
+  background:conic-gradient(from 0deg,transparent 0%,rgba(0,255,135,.3) 20%,transparent 40%);
+  animation:spin-ring 4s linear infinite;pointer-events:none;
+}
+@keyframes spin-ring{to{transform:rotate(360deg)}}
+.code-box-inner{
+  position:relative;z-index:1;
+  padding:30px 24px;text-align:center;
+}
+.code-label2{
+  font-size:10px;font-weight:700;letter-spacing:1.8px;
+  text-transform:uppercase;color:var(--g);opacity:.7;
+  margin-bottom:12px;
+}
+.code-value{
+  font-family:var(--mono);font-size:46px;font-weight:700;
+  letter-spacing:8px;color:#fff;line-height:1;
+  text-shadow:0 0 50px rgba(0,255,135,.5),0 0 20px rgba(0,255,135,.3);
+  animation:code-in .6s cubic-bezier(.34,1.56,.64,1);
+  margin-bottom:8px;
+}
+@keyframes code-in{from{opacity:0;transform:scale(.85) translateY(8px)}to{opacity:1;transform:none}}
+.code-phone{font-size:12px;color:var(--t3);margin-bottom:22px}
+.copy-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(0,255,135,.1);border:1px solid rgba(0,255,135,.22);
+  color:var(--g);border-radius:9px;padding:9px 20px;
+  font-family:var(--font);font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.copy-btn:hover{background:rgba(0,255,135,.18);transform:translateY(-1px)}
+.copy-btn.ok{background:rgba(0,255,135,.22);color:#fff}
+
+/* Steps */
+.steps-card{
+  background:var(--s2);border:1px solid var(--bdr);
+  border-radius:14px;padding:18px;margin-bottom:16px;
+}
+.steps-head{
+  font-size:10px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;color:var(--t3);margin-bottom:14px;
+}
+.step-row{display:flex;align-items:flex-start;gap:11px;margin-bottom:10px}
+.step-row:last-child{margin-bottom:0}
+.step-n{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:var(--gd2);border:1px solid rgba(0,255,135,.18);
+  font-size:10px;font-weight:700;color:var(--g);
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.step-t{font-size:13px;color:var(--t2);line-height:1.5}
+.step-t strong{color:var(--t);font-weight:600}
+
+.btn-ghost{
+  width:100%;padding:13px;background:transparent;
+  border:1px solid var(--bdr);border-radius:12px;
+  color:var(--t3);font-family:var(--font);font-size:13px;font-weight:500;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:all .2s;
+}
+.btn-ghost:hover{border-color:var(--bdr2);color:var(--t2);background:rgba(255,255,255,.02)}
+
+/* ── FOOTER ── */
+footer{
+  position:relative;z-index:1;
+  margin-top:40px;text-align:center;
+}
+.foot-row{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:9px 20px;
+  background:rgba(255,255,255,.03);border:1px solid var(--bdr);
+  border-radius:24px;font-size:12px;color:var(--t3);
+}
+.foot-brand{font-weight:700;color:var(--g);letter-spacing:-.2px}
+.foot-sep{width:1px;height:12px;background:var(--bdr2)}
+
+/* ── ANIM ── */
+@keyframes fade-up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.fade-up{animation:fade-up .55s cubic-bezier(.22,1,.36,1) both}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
 </head>
 <body>
 
-<div class="box">
-  <h2>Rabbit Pair Checker</h2>
+<canvas id="c"></canvas>
 
-  <input
-    type="text"
-    id="number"
-    placeholder="Enter number (e.g. 9123658963)"
-  >
+<div class="page">
 
-  <button onclick="getPair()">
-    Get Pair Code
-  </button>
+  <!-- HEADER -->
+  <header>
+    <a class="brand" href="#">
+      <div class="brand-logo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00ff87" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+        </svg>
+      </div>
+      <span class="brand-name">Rabbit XMD Mini</span>
+    </a>
+    <div class="pill">
+      <span class="pill-dot"></span>
+      Online
+    </div>
+  </header>
 
-  <h3>Status</h3>
-  <div id="status">Waiting...</div>
+  <!-- HERO -->
+  <div class="hero fade-up">
+    <div class="hero-eyebrow">
+      <span class="hero-line"></span>
+      WhatsApp Pairing
+      <span class="hero-line"></span>
+    </div>
+    <h1 class="hero-h1">Pair your device<br><span class="accent">instantly</span></h1>
+    <p class="hero-sub">No QR code. No hassle. Just enter your number and link your WhatsApp bot in seconds.</p>
+  </div>
 
-  <h3>Response</h3>
-  <pre id="response">No data</pre>
+  <!-- CARD -->
+  <div class="card fade-up" style="animation-delay:.1s">
+    <div class="card-body">
+
+      <!-- State bar -->
+      <div class="state-bar">
+        <div class="state-item active" id="st1">
+          <div class="state-node" id="sn1">1</div>
+          <div class="state-txt">Enter</div>
+        </div>
+        <div class="state-item" id="st2">
+          <div class="state-node" id="sn2">2</div>
+          <div class="state-txt">Generate</div>
+        </div>
+        <div class="state-item" id="st3">
+          <div class="state-node" id="sn3">3</div>
+          <div class="state-txt">Pair ✓</div>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div id="form-sec">
+        <h2 class="form-title">Get Pair Code</h2>
+        <p class="form-sub">Enter your WhatsApp number with country code.</p>
+
+        <label class="label" for="phone">Phone Number</label>
+        <div class="inp-wrap" id="inp-wrap">
+          <div class="inp-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.67A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+          </div>
+          <input type="tel" id="phone" placeholder="91XXXXXXXXXX" inputmode="numeric" maxlength="15" autocomplete="tel">
+          <button class="inp-clear" id="clr-btn" onclick="clearInput()" tabindex="-1">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="hint-row">
+          <span class="hint">Include country code · e.g. <b>917003816486</b></span>
+          <span class="char-count" id="cc">0/15</span>
+        </div>
+
+        <button class="cta" id="cta-btn" onclick="generate(event)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
+          </svg>
+          Generate Code
+        </button>
+
+        <div id="err">
+          <div class="err-inner">
+            <span class="err-ico">⚠️</span>
+            <span class="err-txt" id="err-txt"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT -->
+      <div id="res">
+        <div class="res-badge">
+          <div class="res-badge-dot"></div>
+          <span class="res-badge-txt">Code generated successfully</span>
+        </div>
+
+        <div class="code-box">
+          <div class="code-box-bg"></div>
+          <div class="code-box-ring"></div>
+          <div class="code-box-border"></div>
+          <div class="code-box-inner">
+            <div class="code-label2">✦ Pairing Code</div>
+            <div class="code-value" id="code-val">—</div>
+            <div class="code-phone" id="code-ph"></div>
+            <button class="copy-btn" id="copy-btn" onclick="doCopy()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+              </svg>
+              Copy Code
+            </button>
+          </div>
+        </div>
+
+        <div class="steps-card">
+          <div class="steps-head">Enter the code on your phone</div>
+          <div class="step-row"><div class="step-n">1</div><div class="step-t">Open <strong>WhatsApp</strong></div></div>
+          <div class="step-row"><div class="step-n">2</div><div class="step-t">Tap <strong>⋮ → Linked Devices</strong></div></div>
+          <div class="step-row"><div class="step-n">3</div><div class="step-t">Tap <strong>"Link with phone number"</strong></div></div>
+          <div class="step-row"><div class="step-n">4</div><div class="step-t">Enter the code above — expires in a few minutes</div></div>
+        </div>
+
+        <button class="btn-ghost" onclick="goBack()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Try a different number
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="foot-row">
+      <span class="foot-brand">RabbitXMD</span>
+      <span class="foot-sep"></span>
+      <span>Fast WhatsApp Pairing</span>
+      <span class="foot-sep"></span>
+      <span>🔒 Secure</span>
+    </div>
+  </footer>
+
 </div>
 
 <script>
-async function getPair() {
-  const number = document.getElementById("number").value.trim();
-  const status = document.getElementById("status");
-  const response = document.getElementById("response");
+/* ── PARTICLES ─────────────────────────────────── */
+(function(){
+  const cv=document.getElementById('c');
+  const cx=cv.getContext('2d');
+  let W,H,pts=[];
+  const N=55,C='rgba(0,255,135,',MAX=120;
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+  resize();window.addEventListener('resize',()=>{resize();init()});
+  function init(){pts=[];for(let i=0;i<N;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.5+.5})}
+  function draw(){
+    cx.clearRect(0,0,W,H);
+    for(let i=0;i<N;i++){
+      const p=pts[i];p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+      cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fillStyle=C+'.55)';cx.fill();
+      for(let j=i+1;j<N;j++){const q=pts[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<MAX){cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.strokeStyle=C+(1-d/MAX)*.12+')';cx.lineWidth=.6;cx.stroke()}}
+    }
+    requestAnimationFrame(draw);
+  }
+  init();draw();
+})();
 
-  if (!number) {
-    status.textContent = "❌ Enter a number";
+/* ── LOGIC ─────────────────────────────────────── */
+// Bot server proxies rabbitapi — no CORS issue
+const API_URL = '/api/pair?number=';
+let _code = '';
+
+// DOM refs
+const phoneEl  = document.getElementById('phone');
+const ctaBtn   = document.getElementById('cta-btn');
+const errDiv   = document.getElementById('err');
+const errTxt   = document.getElementById('err-txt');
+const inpWrap  = document.getElementById('inp-wrap');
+const formSec  = document.getElementById('form-sec');
+const resSec   = document.getElementById('res');
+const codeVal  = document.getElementById('code-val');
+const codePh   = document.getElementById('code-ph');
+const ccEl     = document.getElementById('cc');
+
+phoneEl.addEventListener('input', () => {
+  phoneEl.value = phoneEl.value.replace(/\D/g, '');
+  ccEl.textContent = phoneEl.value.length + '/15';
+  hideErr();
+  inpWrap.classList.remove('shake');
+});
+phoneEl.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+
+function clearInput() {
+  phoneEl.value = '';
+  ccEl.textContent = '0/15';
+  phoneEl.focus();
+}
+
+function setStep(n) {
+  [1,2,3].forEach(i => {
+    const st = document.getElementById('st' + i);
+    const sn = document.getElementById('sn' + i);
+    if (!st || !sn) return;
+    st.className = 'state-item' + (i < n ? ' done' : i === n ? ' active' : '');
+    sn.textContent = i < n ? '✓' : String(i);
+  });
+}
+
+async function generate() {
+  const phone = phoneEl.value.trim();
+  hideErr();
+  inpWrap.classList.remove('shake');
+
+  if (!phone) {
+    inpWrap.classList.add('shake');
+    showErr('Please enter your WhatsApp number.');
+    phoneEl.focus();
+    return;
+  }
+  if (phone.length < 7 || phone.length > 15) {
+    inpWrap.classList.add('shake');
+    showErr('Enter a valid number with country code (7–15 digits).');
+    phoneEl.focus();
     return;
   }
 
-  status.textContent = "⏳ Checking...";
-  response.textContent = "";
+  // Loading state
+  ctaBtn.disabled = true;
+  ctaBtn.innerHTML = '<div class="spinner"></div> Generating…';
+  setStep(2);
 
   try {
-    const res = await fetch(
-      `/api/pair?number=${encodeURIComponent(number)}`
-    );
+    const res = await fetch(API_URL + phone, { signal: AbortSignal.timeout(15000) });
 
-    const text = await res.text();
+    if (!res.ok) throw new Error('Server error: ' + res.status);
 
-    status.textContent =
-      `✅ HTTP ${res.status}`;
+    let data;
+    try { data = await res.json(); }
+    catch (e) { throw new Error('Invalid API response.'); }
 
-    try {
-      const json = JSON.parse(text);
-      response.textContent =
-        JSON.stringify(json, null, 2);
-    } catch {
-      response.textContent = text;
+    const code = (data.result && data.result.code) ? data.result.code
+               : data.code ? data.code : null;
+
+    if (!data.success || !code) {
+      throw new Error(data.message || data.error || 'No code returned. Try again.');
     }
 
-  } catch (err) {
-    status.textContent = "❌ Error";
-    response.textContent = err.message;
+    _code = code;
+
+    // Show result
+    formSec.style.display = 'none';
+    resSec.style.display  = 'block';
+    codeVal.textContent   = code;
+    codePh.textContent    = 'For +' + phone;
+    setStep(3);
+
+  } catch (er) {
+    ctaBtn.disabled = false;
+    ctaBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Try Again';
+    setStep(1);
+
+    let msg = er.message || 'Something went wrong.';
+    if (er.name === 'TimeoutError') msg = 'Request timed out after 15s. Try again.';
+    else if (msg.includes('fetch') || msg.includes('Failed') || msg.includes('NetworkError')) msg = 'Network error. Check your connection and try again.';
+
+    showErr(msg);
+    inpWrap.classList.add('shake');
   }
 }
-</script>
 
+function doCopy() {
+  if (!_code) return;
+  const btn = document.getElementById('copy-btn');
+  const done = () => {
+    btn.classList.add('ok');
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Copied!';
+    setTimeout(() => {
+      btn.classList.remove('ok');
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copy Code';
+    }, 2500);
+  };
+  if (navigator.clipboard) navigator.clipboard.writeText(_code).then(done).catch(() => fb());
+  else fb();
+  function fb() {
+    const t = document.createElement('textarea');
+    t.value = _code; t.style = 'position:fixed;opacity:0';
+    document.body.appendChild(t); t.select(); document.execCommand('copy');
+    document.body.removeChild(t); done();
+  }
+}
+
+function goBack() {
+  resSec.style.display  = 'none';
+  formSec.style.display = 'block';
+  ctaBtn.disabled = false;
+  ctaBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>Generate Code';
+  phoneEl.value = ''; _code = '';
+  ccEl.textContent = '0/15';
+  hideErr(); setStep(1); phoneEl.focus();
+}
+
+function showErr(m) { errTxt.textContent = m; errDiv.style.display = 'block'; }
+function hideErr()  { errDiv.style.display = 'none'; }
+
+window.addEventListener('load', () => phoneEl.focus());
+</script>
 </body>
 </html>
