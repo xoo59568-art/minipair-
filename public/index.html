@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rabbit Pair Checker</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 500px;
+      background: #1c1c1c;
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      margin-top: 10px;
+      box-sizing: border-box;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    pre {
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Rabbit Pair Checker</h2>
+
+  <input
+    type="text"
+    id="number"
+    placeholder="Enter number (e.g. 9123658963)"
+  >
+
+  <button onclick="getPair()">
+    Get Pair Code
+  </button>
+
+  <h3>Status</h3>
+  <div id="status">Waiting...</div>
+
+  <h3>Response</h3>
+  <pre id="response">No data</pre>
+</div>
+
+<script>
+async function getPair() {
+  const number = document.getElementById("number").value.trim();
+  const status = document.getElementById("status");
+  const response = document.getElementById("response");
+
+  if (!number) {
+    status.textContent = "❌ Enter a number";
+    return;
+  }
+
+  status.textContent = "⏳ Checking...";
+  response.textContent = "";
+
+  try {
+    const res = await fetch(
+      `/api/pair?number=${encodeURIComponent(number)}`
+    );
+
+    const text = await res.text();
+
+    status.textContent =
+      `✅ HTTP ${res.status}`;
+
+    try {
+      const json = JSON.parse(text);
+      response.textContent =
+        JSON.stringify(json, null, 2);
+    } catch {
+      response.textContent = text;
+    }
+
+  } catch (err) {
+    status.textContent = "❌ Error";
+    response.textContent = err.message;
+  }
+}
+</script>
+
+</body>
+</html>
